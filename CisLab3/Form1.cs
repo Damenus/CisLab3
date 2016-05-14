@@ -24,6 +24,7 @@ namespace CisLab3
             info.serialization();
             info.createXmlFromLinq();
             info.modifyingXMLDocument();
+            info.LINQtoXHTML();
             info.XPath();
         }
     }
@@ -196,6 +197,40 @@ namespace CisLab3
             rootNode.Save("CarsFromLinq.xml");
         }
 
+        public void XPath()
+        {
+            XElement rootNode = XElement.Load("CarsCollection.xml");
+            //sumuję wszystkie wartości horsePower i dzielę przez ich ilość
+            double avgHP = (double)rootNode.XPathEvaluate("(sum(/car/engine[@model!='TDI']/horsePower))div(count(/car/engine[@model!='TDI']/horsePower))");
+            Console.WriteLine("XPath podpunkt 3:");
+            Console.WriteLine("{0}", avgHP);
+            
+            IEnumerable<XElement> models = rootNode.XPathSelectElements("/car/model[not(. = preceding::car/model)]");
+            foreach (var value in models)
+            {
+                Console.WriteLine("{0}", value);
+            }
+        }
+
+        public void LINQtoXHTML()
+        {
+            IEnumerable<XElement> nodes =
+                                          from f in myCars
+                                          select new XElement("tr",
+                                                    new XElement("td", f.Model),                                                    
+                                                    new XElement("td", f.Engine.Displacement),
+                                                    new XElement("td", f.Engine.HorsePower),
+                                                    new XElement("td", f.Engine.Model),
+                                                    new XElement("td", f.Year));
+
+            XElement rootNode = new XElement("body",new XElement("table", nodes)); 
+
+            XElement rootHTML = XElement.Load("template.html");
+            rootHTML.LastNode.ReplaceWith(rootNode);
+            //rootHTML.XPathSelectElement("//body").ReplaceNodes();
+            rootHTML.Save("CarsToHtml.html");
+        }
+
         public void modifyingXMLDocument()
         {
             XElement root = XElement.Load("CarsCollection.xml");
@@ -211,18 +246,5 @@ namespace CisLab3
 
         }
 
-        public void XPath()
-        {
-            XElement rootNode = XElement.Load("CarsCollection.xml");
-
-            double avgHP = (double)rootNode.XPathEvaluate("(sum(/car/engine[@model!='TDI']/horsePower))div(count(/car/engine[@model!='TDI']/horsePower))");
-            Console.WriteLine("{0}", avgHP);
-
-            IEnumerable<XElement> models = rootNode.XPathSelectElements("/car/model[not(. = preceding::car/model)]");
-            foreach (var value in models)
-            {
-                Console.WriteLine("{0}", value);
-            }
-        }
     }
 }
