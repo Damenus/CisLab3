@@ -22,26 +22,25 @@ namespace CisLab3
             info.queryOne();
             info.serialization();
             info.createXmlFromLinq();
-            info.modyfikacionXMLDocument();
+            info.modifyingXMLDocument();
         }
     }
 
+    [XmlType("car")]
+    [XmlRoot("car")]
     public class Car
     {
+        [XmlElement(ElementName = "model")]
         private string model;
-        private int year;
+        [XmlElement(ElementName = "engine")]
         private Engine motor;
+        [XmlElement(ElementName = "year")]
+        private int year;
 
         public string Model 
         { 
             get { return this.model; } 
             set { this.model = value; } 
-        }
-
-        public int Year
-        {
-            get { return this.year; }
-            set { this.year = value; }
         }
 
         public Engine Engine
@@ -50,6 +49,13 @@ namespace CisLab3
             set { this.motor = value; }
         }
 
+        public int Year
+        {
+            get { return this.year; }
+            set { this.year = value; }
+        }
+
+        public Car() { }
 
         public Car(string model, Engine engine, int year) 
         {
@@ -61,8 +67,11 @@ namespace CisLab3
 
     public class Engine
     {
+        [XmlElement(ElementName = "displacement")]
         private double displacement;
+        [XmlElement(ElementName = "horsePower")]
         private double horsePower;
+        [XmlAttribute(AttributeName = "model")]
         private string model;
 
         public double Displacement
@@ -83,6 +92,8 @@ namespace CisLab3
             set { this.model = value; }
         }
 
+        public Engine() { }
+
         public Engine(double displacement, double power, string model)
         {
             this.displacement = displacement;
@@ -94,7 +105,7 @@ namespace CisLab3
 
     public class Information
     {
-
+        [XmlArray("car")]
         List<Car> myCars = new List<Car>()
         {
             new Car("E250", new Engine(1.8, 204, "CGI"), 2009),
@@ -120,10 +131,10 @@ namespace CisLab3
                 group f.hppl by f.engineType into g
                 select new { name = g.Key, avg = g.Average()};                        
  
-            foreach (var value in result)
-            {
-               // Console.WriteLine(value.engineType);
-            }
+            //foreach (var value in result)
+            //{
+            //    Console.WriteLine(value.engineType);
+            //}
 
             foreach (var value in result2)
             {
@@ -150,20 +161,20 @@ namespace CisLab3
             cars.Save("CarsCollection.xml");
 
             XElement root = XElement.Load("CarsCollection.xml");
-            XDocument document = XDocument.Load("CarsCollection.xml");
-            XElement root2 = document.Root; 
+            //XDocument document = XDocument.Load("CarsCollection.xml");
+            //XElement root2 = document.Root; 
 
             //Serializing Object
-            //Stream outputStream = File.OpenWrite("CarsCollection2.xml");
-            //Type type = typeof(Car);
-            //XmlSerializer serializer = new XmlSerializer(type);
-            //serializer.Serialize(outputStream, myCars);
-            //outputStream.Close();
+            Stream outputStream = File.OpenWrite("CarsCollection2.xml");
+            Type type = typeof(List<Car>);
+            XmlSerializer serializer = new XmlSerializer(type, new XmlRootAttribute("cars"));
+            serializer.Serialize(outputStream, myCars);
+            outputStream.Close();
 
-            //Stream inputStream = File.OpenRead("CarsCollection2.xml");
-            //XmlSerializer deserializer = new XmlSerializer(type);
-            //cars = (XElement)deserializer.Deserialize(inputStream);
-            //inputStream.Close();
+            Stream inputStream = File.OpenRead("CarsCollection2.xml");
+            XmlSerializer deserializer = new XmlSerializer(type, new XmlRootAttribute("cars"));
+            var deser = (List<Car>)deserializer.Deserialize(inputStream);
+            inputStream.Close();
 
         }
 
@@ -183,7 +194,7 @@ namespace CisLab3
             rootNode.Save("CarsFromLinq.xml");
         }
 
-        public void modyfikacionXMLDocument()
+        public void modifyingXMLDocument()
         {
             XElement xmlTree = XElement.Load("CarsCollection.xml");
             xmlTree.Element("car").Element("engine").Element("horsePower").Name = "hp"; //.ReplaceAll();
