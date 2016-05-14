@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 
 namespace CisLab3
 {
@@ -23,6 +24,7 @@ namespace CisLab3
             info.serialization();
             info.createXmlFromLinq();
             info.modifyingXMLDocument();
+            info.XPath();
         }
     }
 
@@ -196,18 +198,31 @@ namespace CisLab3
 
         public void modifyingXMLDocument()
         {
-            XElement xmlTree = XElement.Load("CarsCollection.xml");
-            xmlTree.Element("car").Element("engine").Element("horsePower").Name = "hp"; //.ReplaceAll();
+            XElement root = XElement.Load("CarsCollection.xml");
+            //root.Element("car").Element("engine").Element("horsePower"); //.ReplaceAll();
+
+            //root.Parse(
+            //    from e in root.Elements()
+            //    select e.Element("engine").Element("horsePower").Name = "hp"
+            //);
 
 
-            xmlTree.Save("carsmodyfikacionXMLDocument.xml");
+            root.Save("carsmodyfikacionXMLDocument.xml");
 
         }
 
         public void XPath()
         {
-           // XElement rootNode = XElement.Load("CarsCollection.xml");
-           // double avgHP = (double)rootNode.XPathEvaluate("myXPathExpression1");
+            XElement rootNode = XElement.Load("CarsCollection.xml");
+
+            double avgHP = (double)rootNode.XPathEvaluate("(sum(/car/engine[@model!='TDI']/horsePower))div(count(/car/engine[@model!='TDI']/horsePower))");
+            Console.WriteLine("{0}", avgHP);
+
+            IEnumerable<XElement> models = rootNode.XPathSelectElements("/car/model[not(. = preceding::car/model)]");
+            foreach (var value in models)
+            {
+                Console.WriteLine("{0}", value);
+            }
         }
     }
 }
