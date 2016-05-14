@@ -24,7 +24,7 @@ namespace CisLab3
     {
         private string model;
         private int year;
-        private Engine motor;
+        private Engine engine;
 
         public string Model 
         { 
@@ -40,15 +40,15 @@ namespace CisLab3
 
         public Engine Engine
         {
-            get { return this.motor; }
-            set { this.motor = value; }
+            get { return this.engine;  }
+            set { this.engine = value;  }
         }
 
 
         public Car(string model, Engine engine, int year) 
         {
             this.model = model;
-            this.motor = engine;
+            this.engine = engine;
             this.year = year;
         }
     }
@@ -110,17 +110,17 @@ namespace CisLab3
                          select new { engineType = e.Engine.Model == "TDI" ? "disel": "petrol", hppl = e.Engine.HorsePower/e.Engine.Displacement };
 
             var result2 = from f in result
-                group f.hppl by f.engineType into g
-                select new { name = g.Key, avg = g.Average()};                        
+                          group f.hppl by f.engineType;
+
  
             foreach (var value in result)
             {
-               // Console.WriteLine(value.engineType);
+                Console.WriteLine(value.engineType);
             }
 
-            foreach (var value in result2)
+            foreach (var value2 in result2)
             {
-                Console.WriteLine("{0}: {1} ", value.name, value.avg);
+                Console.WriteLine(value2.Key);
             }
 
         }

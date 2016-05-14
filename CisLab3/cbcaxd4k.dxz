@@ -111,16 +111,16 @@ namespace CisLab3
 
             var result2 = from f in result
                 group f.hppl by f.engineType into g
-                select new { name = g.Key, avg = g.Average()};                        
+                select new { name = g.Key, sum = g.Sum()};                        
  
             foreach (var value in result)
             {
-               // Console.WriteLine(value.engineType);
+                Console.WriteLine(value.engineType);
             }
 
             foreach (var value in result2)
             {
-                Console.WriteLine("{0}: {1} ", value.name, value.avg);
+                Console.WriteLine("{0}: {1} ", value.name, value.sum);
             }
 
         }
