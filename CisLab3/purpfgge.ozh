@@ -21,8 +21,6 @@ namespace CisLab3
             Information info = new Information();
             info.queryOne();
             info.serialization();
-            info.createXmlFromLinq();
-            info.modyfikacionXMLDocument();
         }
     }
 
@@ -136,6 +134,7 @@ namespace CisLab3
         {
             XElement cars = new XElement("cars"); 
             
+
             foreach(var f in myCars) 
             {
                 cars.Add(new XElement("car", 
@@ -167,36 +166,20 @@ namespace CisLab3
 
         }
 
-        public void createXmlFromLinq() {
+        private void createXmlFromLinq(List<Car> myCars) {
             //LINQ query expressions
             IEnumerable<XElement> nodes = 
-                                          from f in myCars
-                                          select    new XElement("car",
-                                                    new XElement("model", f.Model),
-                                                    new XElement("engine",
-                                                        new XElement("displacement", f.Engine.Displacement),
-                                                        new XElement("horsePower", f.Engine.HorsePower),
-                                                        new XAttribute("model", f.Engine.Model)),
-                                                    new XElement("year", f.Year));
+                                          from node in myCars 
+                                          select new XElement(node.Model);
            
             XElement rootNode = new XElement("cars", nodes); //create a root node to contain the query results
             rootNode.Save("CarsFromLinq.xml");
         }
 
-        public void modyfikacionXMLDocument()
-        {
-            XElement xmlTree = XElement.Load("CarsCollection.xml");
-            xmlTree.Element("car").Element("engine").Element("horsePower").Name = "hp"; //.ReplaceAll();
-
-
-            xmlTree.Save("carsmodyfikacionXMLDocument.xml");
-
-        }
-
         public void XPath()
         {
-           // XElement rootNode = XElement.Load("CarsCollection.xml");
-           // double avgHP = (double)rootNode.XPathEvaluate("myXPathExpression1");
+            XElement rootNode = XElement.Load("CarsCollection.xml");
+            double avgHP = (double)rootNode.XPathEvaluate("myXPathExpression1");
         }
     }
 }
