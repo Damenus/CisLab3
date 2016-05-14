@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
+using System.Xml;
 
 namespace CisLab3
 {
@@ -234,13 +235,16 @@ namespace CisLab3
         public void modifyingXMLDocument()
         {
             XElement root = XElement.Load("CarsCollection.xml");
-            //root.Element("car").Element("engine").Element("horsePower"); //.ReplaceAll();
+           
+            //podpunkt 1 dla każdego węzła równolele przekształcam
+            root.Elements("car").Elements("engine").Elements("horsePower").AsParallel()
+                .ForAll(e => e.Name = "hp");
 
-            //root.Parse(
-            //    from e in root.Elements()
-            //    select e.Element("engine").Element("horsePower").Name = "hp"
-            //);
-
+            //podpunkt 2
+            //IEnumerable<XName> names = from a in root.Elements("car").Elements("year").Attributes() select a.Name;
+            root.Elements("car").AsParallel()
+               .ForAll(e => e.Element("model").SetAttributeValue("year", e.Element("year").Value));
+            root.Elements("car").Elements("year").Remove();
 
             root.Save("carsmodyfikacionXMLDocument.xml");
 
